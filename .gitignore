@@ -1,0 +1,64 @@
+# Add any directories, files, or patterns you don't want to be tracked by version control
+# OS X
+.DS_Store*
+Icon?
+._*
+
+# IDE
+.vscode
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.idea
+
+# npm
+node_modules
+
+# bower
+public/bower_components
+
+# Runtime data
+pids
+
+# Runtime
+*.seed
+*.log
+#*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.tsv
+*.pid.lock
+*.tgz
+*.zip
+*.apk
+
+# nyc test coverage
+.nyc_output
+
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+jspm_packages
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Yarn Integrity file
+.yarn-integrity
+
+# content stills
+public/static/images/stills*
