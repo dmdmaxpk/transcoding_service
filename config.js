@@ -11,7 +11,7 @@ let config = {
         port: '3000',
     },
     productionlocal: {
-        port: '3006',
+        port: '3011',
     }
 };
 
@@ -28,11 +28,11 @@ config.transratedVideosDir = "transcoded_videos/";     //Directory for final tra
 
 //Telenor
 config.telenorcontentPath = "/qma/telenor/";
-config.telenorVideoServiceAddr = 'http://10:3000'
+config.telenorVideoServiceAddr = 'http://10.3.7.101:3000'
 
 //Zong
 config.zongcontentPath = "/qma/zong/";
-config.zongVideoServiceAddr = 'http://10:3000'
+config.zongVideoServiceAddr = 'http://10.0.1.93:3000'
 
 config.all_bitrates = [
     {
