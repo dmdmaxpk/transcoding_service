@@ -4,6 +4,7 @@ const builder = require('xmlbuilder');
 const axios = require('axios');
 const config = require('../config');
 
+let currentDuration = {};   // For storing IDs and duration
 
 exports.transcodeVideo = async (req, res, next) => {
 
@@ -13,6 +14,15 @@ exports.transcodeVideo = async (req, res, next) => {
     runDockerCmd(req);
 
     res.send("Req recieved for transcoding");
+}
+
+exports.getStatus = async (req, res, next) => {
+
+    let _id = req.query._id
+    console.log(`Current Duration ${currentDuration} for ID: ${_id}`);
+
+    if (currentDuration[_id]) res.send(String(currentDuration[_id]));
+    else res.send("0");
 }
 
 const runDockerCmd = req => {
@@ -28,6 +38,7 @@ const runDockerCmd = req => {
    
 	let profiles = config.all_bitrates;
 
+    // Creating one command for all bitrates
 	profiles.forEach( profile => {
 
 		cmd = cmd + " -s " + profile.frame_size +
@@ -61,13 +72,23 @@ const runDockerCmd = req => {
     child.stdout.on('data', function (data) {
         console.log(data.toString());
     });
-    
-    // Printing Docker Logs
-    child.stderr.on('data', function (data) {
-        let timeStr = data.toString().match(/(?:time|two).{11}/);
-        console.log(timeStr);
 
+    let durationNow;
+    let percentComplete; 
+    
+    // Printing Docker Logs (Must be in stdout, right?)
+    child.stderr.on('data', function (data) {
+        
         console.log( body.file_name + ": " + data.toString());
+
+        // Calculating transcoding time
+        let timeStr = data.toString().match(/time=.{8}/g);      // Parsing time with the next 8 characters for time
+        if (timeStr){
+            durationNow = timeStr[0].split('=')[1].split(':').reduce((acc,time) => (60 * acc) + +time);     // Converting time string 00:1:03 into into 63 seconds
+            percentComplete = parseInt( Number(durationNow) / Number(body.duration) * 100 );    // Current duration divided by total duration gives the %
+            console.log(`% complete: ${percentComplete}`);
+            currentDuration[body._id] = percentComplete;
+        }
     });
 
     // On docker exit
@@ -75,13 +96,16 @@ const runDockerCmd = req => {
         // ext_callback();
         let endTime = new Date();
         let totalTime = (endTime - startTime) / 1000;
-        console.log("All bitrates transcoding done for filename: " + body.file_name + " , Total time taken: " + totalTime/60 + " minutes.");
+        console.log("All bitrates transcoding done for filename: " + body.file_name + " , Total time taken: " + totalTime/60 + ". Total Secs: " + totalTime);
         
         // Step 2 - Creating SMIL File
         createSmilFile(req);
 
         // Step 3 - Setting Transcoding Status to true
         setTranscodeStatus(req);
+
+        // Delete duration for transcoded video
+        delete currentDuration[body._id];
     });
 }
 
@@ -164,7 +188,7 @@ async function setTranscodeStatus (req) {
     let result;
     try {
         result = await axios.put(videoServiceUrl, {transcoding_status: true});
-        console.log(result);
+        console.log(result.data);
     } catch (error) {
         console.error(error.response);
     }
@@ -172,4 +196,3 @@ async function setTranscodeStatus (req) {
     console.log("Newly uploaded video is transcoded now. ");
 
 }
-
