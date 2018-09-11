@@ -86,7 +86,7 @@ const runDockerCmd = req => {
         if (timeStr){
             durationNow = timeStr[0].split('=')[1].split(':').reduce((acc,time) => (60 * acc) + +time);     // Converting time string 00:1:03 into into 63 seconds
             percentComplete = parseInt( Number(durationNow) / Number(body.duration) * 100 );    // Current duration divided by total duration gives the %
-            console.log(`% complete: ${percentComplete}`);
+            console.log(`Completed: ${percentComplete} %`);
             currentDuration[body._id] = percentComplete;
         }
     });
@@ -106,6 +106,7 @@ const runDockerCmd = req => {
 
         // Delete duration for transcoded video
         delete currentDuration[body._id];
+        console.log('Current Duration Obj: ', currentDuration);
     });
 }
 
