@@ -17,10 +17,10 @@ let config = {
 
 console.log("---", env);
 
-if (env === 'development') config = config.development;
-if (env === 'staging') config = config.staging;
-if (env === 'production') config = config.production;
-if (env === 'productionlocal') config = config.productionlocal;
+if (env === 'development')      config = config.development;
+if (env === 'staging')          config = config.staging;
+if (env === 'production')       config = config.production;
+if (env === 'productionlocal')  config = config.productionlocal;
 
 // Common configs
 config.rawContentDir = "videos/";
@@ -28,27 +28,38 @@ config.transratedVideosDir = "transcoded_videos/";     //Directory for final tra
 
 //Telenor
 config.telenorcontentPath = "/qma/telenor/";
-config.telenorVideoServiceAddr = 'http://10.3.7.101:3000'
+config.telenorVideoServiceAddr = 'http://10.3.7.101:3000';
 
 //Zong
 config.zongcontentPath = "/qma/zong/";
-config.zongVideoServiceAddr = 'http://10.0.1.93:3000'
+config.zongVideoServiceAddr = 'http://10.0.1.93:3000';
 
-config.all_bitrates = [
+config.bitrates_profiles = [
+    // {
+    //     "title": "main_720",
+    //     "audio_bitrate": "96k",
+    //     "audio_channels": 2,
+    //     "audio_codec": "aac",
+    //     "audio_sampling": 48000,
+    //     "description": "HD quality bitrate 720.",
+    //     "frame_size": "1280x720",
+    //     "gop_size": 48,
+    //     "level": 30,
+    //     "video_bitrate": "790000",
+    //     "video_codec": "libx264",
+    //     "video_profile": "main"
+    // },
     {
-        "title": "main_720",
-        "audio_bitrate": "96k",
+        "title": "main_480",
+        "audio_bitrate": "128k",
         "audio_channels": 2,
         "audio_codec": "aac",
         "audio_sampling": 48000,
-        "description": "HD quality bitrate 720.",
-        "frame_size": "1280x720",
+        "description": "Medium HD quality bitrate 480.",
+        "frame_size": "854x480",
         "gop_size": 48,
         "level": 30,
-        "profile": null,
-        "slug": "main-720",
-        "threads": 16,
-        "video_bitrate": "790000",
+        "video_bitrate": 550000,
         "video_codec": "libx264",
         "video_profile": "main"
     },
@@ -62,27 +73,7 @@ config.all_bitrates = [
         "frame_size": "640x360",
         "gop_size": 48,
         "level": 30,
-        "profile": null,
-        "slug": "main-360",
-        "threads": 16,
-        "video_bitrate": "400000",
-        "video_codec": "libx264",
-        "video_profile": "main"
-    },
-    {
-        "title": "main_480",
-        "audio_bitrate": "96k",
-        "audio_channels": 2,
-        "audio_codec": "aac",
-        "audio_sampling": 48000,
-        "description": "Medium HD quality bitrate 480.",
-        "frame_size": "854x480",
-        "gop_size": 48,
-        "level": 30,
-        "profile": null,
-        "slug": "main-480",
-        "threads": 16,
-        "video_bitrate": "550000",
+        "video_bitrate": 400000,
         "video_codec": "libx264",
         "video_profile": "main"
     },
@@ -96,30 +87,24 @@ config.all_bitrates = [
         "frame_size": "256x144",
         "gop_size": 48,
         "level": 30,
-        "profile": null,
-        "slug": "baseline-144",
-        "threads": 16,
-        "video_bitrate": "200000",
+        "video_bitrate": 200000,
         "video_codec": "libx264",
         "video_profile": "baseline"
     },
-    {
-        "title": "baseline_240",
-        "audio_bitrate": "64k",
-        "audio_channels": 2,
-        "audio_codec": "aac",
-        "audio_sampling": 48000,
-        "description": "Medium bitrate 240.",
-        "frame_size": "426x240",
-        "gop_size": 48,
-        "level": 30,
-        "profile": null,
-        "slug": "baseline-240",
-        "threads": 16,
-        "video_bitrate": "300000",
-        "video_codec": "libx264",
-        "video_profile": "baseline"
-    }
+    // {
+    //     "title": "baseline_240",
+    //     "audio_bitrate": "64k",
+    //     "audio_channels": 2,
+    //     "audio_codec": "aac",
+    //     "audio_sampling": 48000,
+    //     "description": "Medium bitrate 240.",
+    //     "frame_size": "426x240",
+    //     "gop_size": 48,
+    //     "level": 30,
+    //     "video_bitrate": "300000",
+    //     "video_codec": "libx264",
+    //     "video_profile": "baseline"
+    // }
 ];
 
 // Final bandwidth of playlist files depends on video + audio bitrates combined
@@ -131,13 +116,13 @@ config.smil_bitrates = [
         "video_bitrate": 256000,
         "audio_bitrate": 64000
     },
-    {
-        "title": "baseline_240",
-        "width": 426,
-        "height": 240,
-        "video_bitrate": 496000,
-        "audio_bitrate": 64000
-    },
+    // {
+    //     "title": "baseline_240",
+    //     "width": 426,
+    //     "height": 240,
+    //     "video_bitrate": 496000,
+    //     "audio_bitrate": 64000
+    // },
     {
         "title": "main_360",
         "width": 640,
@@ -145,13 +130,13 @@ config.smil_bitrates = [
         "video_bitrate": 896000,
         "audio_bitrate": 64000
     },
-    {
-        "title": "main_480",
-        "width": 854,
-        "height": 480,
-        "video_bitrate": 1104000,
-        "audio_bitrate": 96000
-    }
+    // {
+    //     "title": "main_480",
+    //     "width": 854,
+    //     "height": 480,
+    //     "video_bitrate": 1104000,
+    //     "audio_bitrate": 96000
+    // }
 ];
 
 module.exports = config;

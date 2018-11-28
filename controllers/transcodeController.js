@@ -36,21 +36,21 @@ const runDockerCmd = req => {
 
     let cmd = "docker run --rm -v $PWD:/tmp/workdir jrottenberg/ffmpeg -i " + config.rawContentDir + filename + " ";
    
-	let profiles = config.all_bitrates;
+	let profiles = config.bitrates_profiles;
 
     // Creating one command for all bitrates
 	profiles.forEach( profile => {
 
 		cmd = cmd + " -s " + profile.frame_size +
 			" -y -acodec " + profile.audio_codec +
-			" -ab " + profile.audio_bitrate +
+			" -b:a " + profile.audio_bitrate +
 			" -ac " + profile.audio_channels +
 			" -ar " + profile.audio_sampling +
 			" -vcodec " + profile.video_codec +
+			" -b:v " + profile.video_bitrate +
 			" -vprofile " + profile.video_profile +
 			" -level " + profile.level +
 			" -g " + profile.gop_size +
-			" -b:v " + profile.video_bitrate +
 			" '" + config.transratedVideosDir + fname + "_" + profile.title + "." + fextention + "' ";
     });
     
