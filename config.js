@@ -18,34 +18,20 @@ if (env === 'development')      config = config.development;
 if (env === 'staging')          config = config.staging;
 if (env === 'production')       config = config.production;
 
-
 // Common configs
 config.rawContentDir = "videos/";
 config.transratedVideosDir = "transcoded_videos/";     //Directory for final transcoded videos.
 
-//Telenor
+// Telenor
 config.telenorcontentPath = "/qma/telenor/";
 config.telenorVideoServiceAddr = 'http://10.3.7.101:3000';
 
-//Zong
+// Zong
 config.zongcontentPath = "/qma/zong/";
 config.zongVideoServiceAddr = 'http://10.0.1.93:3000';
 
+// VODs bitrate settings
 config.bitrates_profiles = [
-    // {
-    //     "title": "main_720",
-    //     "audio_bitrate": "96k",
-    //     "audio_channels": 2,
-    //     "audio_codec": "aac",
-    //     "audio_sampling": 48000,
-    //     "description": "HD quality bitrate 720.",
-    //     "frame_size": "1280x720",
-    //     "gop_size": 48,
-    //     "level": 30,
-    //     "video_bitrate": "790000",
-    //     "video_codec": "libx264",
-    //     "video_profile": "main"
-    // },
     {
         "title": "main_480",
         "audio_bitrate": "128k",
@@ -87,21 +73,7 @@ config.bitrates_profiles = [
         "video_bitrate": 200000,
         "video_codec": "libx264",
         "video_profile": "baseline"
-    },
-    // {
-    //     "title": "baseline_240",
-    //     "audio_bitrate": "64k",
-    //     "audio_channels": 2,
-    //     "audio_codec": "aac",
-    //     "audio_sampling": 48000,
-    //     "description": "Medium bitrate 240.",
-    //     "frame_size": "426x240",
-    //     "gop_size": 48,
-    //     "level": 30,
-    //     "video_bitrate": "300000",
-    //     "video_codec": "libx264",
-    //     "video_profile": "baseline"
-    // }
+    }
 ];
 
 // Final bandwidth of playlist files depends on video + audio bitrates combined
@@ -113,27 +85,13 @@ config.smil_bitrates = [
         "video_bitrate": 256000,
         "audio_bitrate": 64000
     },
-    // {
-    //     "title": "baseline_240",
-    //     "width": 426,
-    //     "height": 240,
-    //     "video_bitrate": 496000,
-    //     "audio_bitrate": 64000
-    // },
     {
         "title": "main_360",
         "width": 640,
         "height": 360,
         "video_bitrate": 896000,
         "audio_bitrate": 64000
-    },
-    // {
-    //     "title": "main_480",
-    //     "width": 854,
-    //     "height": 480,
-    //     "video_bitrate": 1104000,
-    //     "audio_bitrate": 96000
-    // }
+    }
 ];
 
 module.exports = config;
