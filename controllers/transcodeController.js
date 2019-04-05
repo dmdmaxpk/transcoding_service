@@ -98,8 +98,22 @@ const runDockerCmd = req => {
         let totalTime = (endTime - startTime) / 1000;
         console.log("All bitrates transcoding done for filename: " + body.file_name + " , Total time taken: " + totalTime/60 + ". Total Secs: " + totalTime);
         
-        // Step 2 - Creating SMIL File
-        createSmilFile(req);
+        // Step 1 - Copying transcoded files to GCP Mount
+        // Log time for copying
+        console.time("cptime");
+        let copy = childProcess.exec(`cp /qma/telenor/transcoded_videos/${body.file_name.split('.')[0]}* /qma/telenor/gcp_mount`);
+
+        copy.on( 'close', data => {
+            console.log( `Transcoded files of ${body.file_name} copied to GCP`);
+            console.timeEnd("cptime");
+        });
+        
+        copy.stdout.on( 'data', data => console.log( `stdout: ${data}` ));
+        
+        copy.stderr.on( 'data', data => console.log( `stderr: ${data}` ));
+
+        // Step 2 - Creating SMIL File (not needed in the Nginx kaltura)
+        // createSmilFile(req);
 
         // Step 3 - Setting Transcoding Status to true
         setTranscodeStatus(req);
