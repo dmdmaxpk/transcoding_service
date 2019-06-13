@@ -4,7 +4,7 @@ const builder = require('xmlbuilder');
 const axios = require('axios');
 const config = require('../config');
 
-let currentDuration = {};   // For storing IDs and duration
+let currentDuration = {};   // For storing video IDs and duration
 
 exports.transcodeVideo = async (req, res, next) => {
 
@@ -16,6 +16,7 @@ exports.transcodeVideo = async (req, res, next) => {
     res.send("Req recieved for transcoding");
 }
 
+// Status of transcoding
 exports.getStatus = async (req, res, next) => {
 
     let _id = req.query._id
@@ -51,7 +52,7 @@ const runDockerCmd = req => {
 			" -vprofile " + profile.video_profile +
 			" -level " + profile.level +
 			" -g " + profile.gop_size +
-			" '" + config.transratedVideosDir + fname + "_" + profile.title + "." + fextention + "' ";
+			" '" + config.transcodedVideoDir + fname + "_" + profile.title + "." + fextention + "' ";
     });
     
     // Setting the dir for each operator
@@ -74,26 +75,29 @@ const runDockerCmd = req => {
     });
 
     let durationNow;
-    let percentComplete; 
+    let percentComplete;
     
-    // Printing Docker Logs (Must be in stdout, right?)
+    // Printing Docker Logs (Should be in stdout :S)
     child.stderr.on('data', function (data) {
         
-        console.log( body.file_name + ": " + data.toString());
+        console.log( body.file_name + ": " + data.toString());      // Printing the filename and the log
 
         // Calculating transcoding time
-        let timeStr = data.toString().match(/time=.{8}/g);      // Parsing time with the next 8 characters for time
+        // This is the sample line of ffmpeg output: frame= 134 fps=134 q=28.0 q=28.0 q=25.0 size= 0kB time=00:00:06.61 bitrate= 0.1kbits/s  speed=6.59x
+        // The time in the log shows that how many mins of the video is transcoded. So we take that time and divide by the total time of the video and multiple by 100 to see the percentage
+        let timeStr = data.toString().match(/time=.{8}/g);      // Parsing time with the next 8 characters for time (because not every line has time)
         if (timeStr){
-            durationNow = timeStr[0].split('=')[1].split(':').reduce((acc,time) => (60 * acc) + +time);     // Converting time string 00:1:03 into into 63 seconds
-            percentComplete = parseInt( Number(durationNow) / Number(body.duration) * 100 );    // Current duration divided by total duration gives the %
+            durationNow = timeStr[0].split('=')[1].split(':').reduce((acc,time) => (60 * acc) + +time);     // Converting time string into seconds, eg: 00:1:03 is 63 seconds
+            percentComplete = parseInt( Number(durationNow) / Number(body.duration) * 100 );                // Current duration divided by total duration gives the %
             console.log(`Completed: ${percentComplete} %`);
-            currentDuration[body._id] = percentComplete;
+            currentDuration[body._id] = percentComplete;    // Also store the progress in globally so that we can show the progress on CMS too
         }
     });
 
     // On docker exit
     child.on('exit', function() {
-        // ext_callback();
+        
+        // Calculation how much time does one video takes for transcoding
         let endTime = new Date();
         let totalTime = (endTime - startTime) / 1000;
         console.log("All bitrates transcoding done for filename: " + body.file_name + " , Total time taken: " + totalTime/60 + ". Total Secs: " + totalTime);
@@ -101,16 +105,25 @@ const runDockerCmd = req => {
         // Step 1 - Copying transcoded files to GCP Mount
         // Log time for copying
         console.time("cptime");
-        let copy = childProcess.exec(`cp /qma/telenor/transcoded_videos/${body.file_name.split('.')[0]}* /qma/telenor/gcp_mount`);
 
+        let copy;
+
+        if (body.operator == 'telenor') {
+            copy = childProcess.exec(`cp /qma/telenor/transcoded_videos/${body.file_name.split('.')[0]}* /qma/telenor/gcp_mount`);
+        }
+        if (body.operator == 'zong') {
+            copy = childProcess.exec(`cp /qma/zong/transcoded_videos/${body.file_name.split('.')[0]}* /qma/zong/gcp_mount`);
+        }
+
+        // When copy is done
         copy.on( 'close', data => {
-            console.log( `Transcoded files of ${body.file_name} copied to GCP`);
+            console.log(`Transcoded files of ${body.operator}: ${body.file_name} copied to GCP`);
             console.timeEnd("cptime");
         });
         
-        copy.stdout.on( 'data', data => console.log( `stdout: ${data}` ));
-        
-        copy.stderr.on( 'data', data => console.log( `stderr: ${data}` ));
+        // Event Handlers
+        copy.stdout.on( 'data', data => console.log(`stdout: ${data}`));
+        copy.stderr.on( 'data', data => console.log(`stderr: ${data}`));
 
         // Step 2 - Creating SMIL File (not needed in the Nginx kaltura)
         // createSmilFile(req);
@@ -125,13 +138,14 @@ const runDockerCmd = req => {
 }
 
 
+// Not used in Nginx Kaltura
 const createSmilFile = req => {
 
     let body = req.body;
 
     let smildir;
-    if (body.operator == 'telenor') smildir = config.telenorcontentPath + config.transratedVideosDir;
-    if (body.operator == 'zong')    smildir = config.zongcontentPath + config.transratedVideosDir;
+    if (body.operator == 'telenor') smildir = config.telenorcontentPath + config.transcodedVideoDir;
+    if (body.operator == 'zong')    smildir = config.zongcontentPath + config.transcodedVideoDir;
 
     let smilFilePath = smildir + body.file_name.split('.')[0] + ".smil";
     console.log('smilFile DIR: ', smilFilePath);
@@ -190,7 +204,7 @@ const createSmilFile = req => {
 
 }
 
-
+// Function for setting the transcoding status to true when the video is fully transcoded
 async function setTranscodeStatus (req) {
 
     let addr;
@@ -208,6 +222,6 @@ async function setTranscodeStatus (req) {
         console.error(error.response);
     }
 
-    console.log("Newly uploaded video is transcoded now. ");
+    console.log('Newly uploaded video is transcoded now and transcoding_status is set to true');
 
 }

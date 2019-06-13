@@ -20,7 +20,7 @@ if (env === 'production')       config = config.production;
 
 // Common configs
 config.rawContentDir = "videos/";
-config.transratedVideosDir = "transcoded_videos/";     //Directory for final transcoded videos.
+config.transcodedVideoDir = "transcoded_videos/";     //Directory for final transcoded videos.
 
 // Telenor
 config.telenorcontentPath = "/qma/telenor/";
