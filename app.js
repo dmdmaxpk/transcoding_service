@@ -12,12 +12,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Importing Index Routes
 app.use('/', routes);
 
-// Setting Port from config file
-app.set('port', config.port);
-
-// Run server
-const server = app.listen(app.get('port'), () => {
-	console.log(`Express running → PORT ${server.address().port}`); 
-});
-
-module.exports = app;
+// Start Server
+let { port } = config;
+app.listen(port, () => console.log(`APP running on port ${port}`));
