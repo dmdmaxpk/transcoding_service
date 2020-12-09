@@ -2,10 +2,10 @@ const env = process.env.NODE_ENV || 'development';
 
 let config = {
     development: {
-        port: '5000',
+        port: '3000',
     },
     staging: {
-        port: '5000',
+        port: '3000',
     },
     production: {
         port: '3011',
