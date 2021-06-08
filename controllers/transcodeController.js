@@ -58,6 +58,7 @@ const runDockerCmd = req => {
     // Setting the dir for each operator
     if (body.operator === 'telenor') cmd = "cd " + config.telenorcontentPath + "; " + cmd;
     if (body.operator === 'zong')    cmd = "cd " + config.zongcontentPath + "; " + cmd;
+    if (body.operator === 'jazz')    cmd = "cd " + config.jazzcontentPath + "; " + cmd;
 
     console.log("Complete Docker Command-----", cmd);
     console.log("");
@@ -114,6 +115,9 @@ const runDockerCmd = req => {
         if (body.operator == 'zong') {
             copy = childProcess.exec(`cp /qma/zong/transcoded_videos/${body.file_name.split('.')[0]}* /qma/zong/gcp_mount`);
         }
+        if (body.operator == 'jazz') {
+            copy = childProcess.exec(`cp /qma/jazz/transcoded_videos/${body.file_name.split('.')[0]}* /qma/jazz/gcp_mount`);
+        }
 
         // When copy is done
         copy.on( 'close', data => {
@@ -146,6 +150,7 @@ const createSmilFile = req => {
     let smildir;
     if (body.operator == 'telenor') smildir = config.telenorcontentPath + config.transcodedVideoDir;
     if (body.operator == 'zong')    smildir = config.zongcontentPath + config.transcodedVideoDir;
+    if (body.operator == 'jazz')    smildir = config.jazzcontentPath + config.transcodedVideoDir;
 
     let smilFilePath = smildir + body.file_name.split('.')[0] + ".smil";
     console.log('smilFile DIR: ', smilFilePath);
@@ -210,6 +215,7 @@ async function setTranscodeStatus (req) {
     let addr;
     if (req.body.operator == 'telenor') addr = config.telenorVideoServiceAddr;
     if (req.body.operator == 'zong') addr = config.zongVideoServiceAddr;
+    if (req.body.operator == 'jazz') addr = config.jazzVideoServiceAddr;
 
     let videoServiceUrl = `${addr}/video?_id=${req.body._id}`;
     console.log(videoServiceUrl);

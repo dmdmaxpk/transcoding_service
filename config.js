@@ -30,6 +30,10 @@ config.telenorVideoServiceAddr = 'http://10.3.7.101:3000';
 config.zongcontentPath = "/qma/zong/";
 config.zongVideoServiceAddr = 'http://10.0.1.93:3000';
 
+// Jazz
+config.jazzcontentPath = "/qma/jazz/";
+config.jazzVideoServiceAddr = 'http://10.3.7.101:4000';
+
 // VODs bitrate settings
 config.bitrates_profiles = [
     {
