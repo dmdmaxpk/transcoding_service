@@ -116,7 +116,7 @@ const runDockerCmd = req => {
             copy = childProcess.exec(`cp /qma/zong/transcoded_videos/${body.file_name.split('.')[0]}* /qma/zong/gcp_mount`);
         }
         if (body.operator == 'jazz') {
-            copy = childProcess.exec(`cp /qma/jazz/transcoded_videos/${body.file_name.split('.')[0]}* /qma/jazz/gcp_mount`);
+            copy = childProcess.exec(`cp /qma/telenor/transcoded_videos/${body.file_name.split('.')[0]}* /qma/telenor/gcp_mount`);
         }
 
         // When copy is done
