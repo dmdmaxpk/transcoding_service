@@ -33,8 +33,7 @@ const runDockerCmd = req => {
     // Creating Docker Command
     let filename = body.file_name;
     let fname = filename.split('.')[0];
-    let fextention = filename.split('.')[1];
-    console.log("fextention", fextention);
+    let fextention = 'm4v';
     // let fextention = filename.split('.')[1];
 
     let cmd = "docker run --rm -v $PWD:/tmp/workdir jrottenberg/ffmpeg -i " + config.rawContentDir + filename + " ";
